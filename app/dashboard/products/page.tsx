@@ -1,8 +1,8 @@
 import { Suspense } from "react";
-import { PRODUCTS, filterProducts } from "./_data/products";
-import ProductsHeader from "./ProductsHeader";
-import ProductsSearch from "./ProductsSearch";
-import ProductsTable from "./ProductsTable";
+import { PRODUCTS, filterProducts } from "../../../products/_data/products";
+import ProductsHeader from "../../../products/components/ProductsHeader";
+import ProductsSearch from "../../../products/components/ProductsSearch";
+import ProductsTable from "../../../products/components/ProductsTable";
 
 interface SearchParams {
   q?: string;

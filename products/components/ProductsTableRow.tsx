@@ -1,4 +1,4 @@
-import { Product } from "./_data/products";
+import { Product } from "../_data/products";
 import ProductRowActions from "./ProductRowActions";
 
 interface ProductsTableRowProps {

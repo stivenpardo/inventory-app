@@ -1,4 +1,4 @@
-import { Product } from "./_data/products";
+import { Product } from "../_data/products";
 import ProductsTableRow from "./ProductsTableRow";
 import ProductsEmptyState from "./ProductsEmptyState";
 
