@@ -1,4 +1,7 @@
+"use client";
+
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import Button from "@/components/Button";
 
 const navLinks = [
@@ -9,6 +12,12 @@ const navLinks = [
 ];
 
 export default function Navbar() {
+  const pathname = usePathname();
+
+  if (pathname.startsWith("/dashboard")) {
+    return null;
+  }
+
   return (
     <header className="w-full px-6 py-4 lg:px-12">
       <nav className="mx-auto flex max-w-7xl items-center justify-between">
