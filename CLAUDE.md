@@ -21,6 +21,36 @@ This project uses **Next.js 16.2.6** which has breaking changes from earlier ver
 - **Fonts:** Geist and Geist Mono loaded via `next/font/google`
 - **Path alias:** `@/*` maps to project root
 
+## Agent Team
+
+Six specialized subagents govern all work. **No agent writes source code without an approved proposal upstream.**
+
+| Agent | Trigger phrase | Writes to |
+|---|---|---|
+| `spec-writer` | "write user stories for...", "convert requirements" | `docs/requirements/` |
+| `architecture-reviewer` | "evaluate this design", "review this decision" | `docs/architecture/` |
+| `coordinator` | "coordinate: implement US-XXX-000" | `docs/proposals/` + dispatches all downstream agents |
+| `backend-engineer` | "implement NestJS module for..." | `apps/api/src/` |
+| `frontend-engineer` | "implement Next.js page for..." | `apps/web/` |
+| `test-engineer` | "write tests for...", "audit test coverage" | co-located `*.test.tsx` / `*.spec.ts` |
+| `devops-engineer` | "set up CI", "configure deploy" | `.github/`, `turbo.json` |
+
+### Workflow: Propose → Review → Apply
+1. `spec-writer` → `docs/requirements/` → **user approves**
+2. `architecture-reviewer` → `docs/architecture/` → **user approves**
+3. `coordinator` → `docs/proposals/` → dispatches `backend-engineer` + `frontend-engineer` in parallel
+4. `test-engineer` maps tests to acceptance criteria
+5. `devops-engineer` wires pipeline
+
+### Key directories
+```
+docs/
+  requirements/   ← user stories (spec-writer output)
+  architecture/   ← ADRs (architecture-reviewer output)
+  proposals/      ← sprint task proposals awaiting approval
+  sprints/        ← sprint planning docs
+```
+
 ## Project Structure
 
 ```

@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Inventory App — Spec-Driven Development Guide
 
-## Getting Started
+## How to Work With the Agent Team
 
-First, run the development server:
+You never talk to agents directly. You always talk to Claude (the main session), and Claude routes to the correct agent based on what you say.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## The Full Gate Flow
+
+Every feature follows this sequence. **No gate can be skipped.**
+
+```
+1. You describe a requirement
+        ↓
+2. spec-writer      → docs/requirements/SPEC.md        (you approve)
+        ↓
+3. architecture-reviewer → docs/architecture/ADR-xxx.md  (you approve)
+        ↓
+4. coordinator      → docs/proposals/US-xxx.md         (dispatches engineers)
+        ↓
+5. backend-engineer + frontend-engineer                (run in parallel)
+        ↓
+6. test-engineer    → tests mapped to acceptance criteria
+        ↓
+7. devops-engineer  → CI/CD, deploy config
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Agent Trigger Phrases
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Say these to Claude to invoke the right agent:
 
-## Learn More
+| What you say | Agent dispatched | Writes to |
+|---|---|---|
+| `"write user stories for..."` | `spec-writer` | `docs/requirements/` |
+| `"convert requirements: ..."` | `spec-writer` | `docs/requirements/` |
+| `"evaluate this design..."` | `architecture-reviewer` | `docs/architecture/` |
+| `"review this decision..."` | `architecture-reviewer` | `docs/architecture/` |
+| `"coordinate: implement US-XXX-000"` | `coordinator` | dispatches all downstream agents |
+| `"implement Next.js page for..."` | `frontend-engineer` | `apps/web/` |
+| `"implement NestJS module for..."` | `backend-engineer` | `apps/api/src/` |
+| `"write tests for..."` | `test-engineer` | co-located `*.test.tsx` / `*.spec.ts` |
+| `"set up CI..."` | `devops-engineer` | `.github/`, `turbo.json` |
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Example: Your First Requirement
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+The store owner tells you: *"I need to add products with a name, price, category, and stock quantity."*
 
-## Deploy on Vercel
+**You say to Claude:**
+```
+Write user stories for the following client requirement:
+the store owner needs to add a new product with name, price, category, and stock quantity.
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Claude dispatches `spec-writer`. It outputs a structured user story to `docs/requirements/`.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+You review it, then say:
+```
+Evaluate the design for US-PRD-001
+```
+
+Claude dispatches `architecture-reviewer`. It outputs an ADR to `docs/architecture/`.
+
+You approve, then say:
+```
+coordinate: implement US-PRD-001
+```
+
+The coordinator handles the rest — proposals, parallel implementation, tests.
+
+---
+
+## User Story ID Format
+
+```
+US-[DOMAIN]-[NUMBER]
+
+US-PRD  → Product catalog
+US-INV  → Inventory / stock management
+US-POS  → Point of Sale / billing
+US-AUT  → Authentication / access control
+US-RPT  → Reports / analytics
+```
+
+---
+
+## Key Directories
+
+```
+docs/
+  requirements/   ← user stories (spec-writer output)
+  architecture/   ← ADRs (architecture-reviewer output)
+  proposals/      ← sprint task proposals (coordinator output)
+  sprints/        ← sprint planning docs
+.claude/
+  agents/         ← agent definition files
+```
+
+---
+
+## Dev Commands
+
+```bash
+npm run dev     # Start dev server → http://localhost:3000
+npm run build   # Production build
+npm run lint    # ESLint
+```
+
+---
+
+## Tech Stack
+
+- **Frontend:** Next.js 16.2.6 — App Router, TypeScript strict, Tailwind CSS v4
+- **Backend:** NestJS — REST API, Swagger, class-validator
+- **Database:** MongoDB Atlas + Prisma
+- **Monorepo:** Turborepo (`apps/web`, `apps/api`, `packages/types`)
+- **Tests:** Vitest + Testing Library (frontend), Jest (backend)
